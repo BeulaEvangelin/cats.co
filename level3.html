@@ -17,7 +17,6 @@
         "wall.png",
         "cat1.png",
         "cat2.png",
-        "cat3.png",
         "menu.png",
         "click.wav",
         "angyMeow.wav",
@@ -50,11 +49,11 @@
           .pos(0, 650, CENTER, BOTTOM, gameContainer)
           .addPhysics({
             bounciness: 0,
-            angular: 0,
-            density: 2.5,
+            angular: 0.5,
+            density: 2,
           });
 
-        new Rectangle(20, 465, red, black, 2)
+        new Rectangle(30, 465, orange, black, 2)
           .reg(CENTER)
           .pos(0, -10, CENTER, BOTTOM, gameContainer)
           .addPhysics(false);
