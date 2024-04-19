@@ -97,8 +97,8 @@ https://zimjs.com/zapps
 
             const wallAnimate = new Sprite({ json: "wall.json" })
               .sca(0.8)
-              .pos(0, 100, CENTER, BOTTOM, gameContainer);
-            wallAnimate.run({ time: 6, loop: true });
+              .pos(0, 100, CENTER, BOTTOM, gameContainer)
+              .run(6);
 
             const instructions = new Label({
               text: "TiLt To BaLaNcE",
@@ -123,7 +123,6 @@ https://zimjs.com/zapps
               .center(gameContainer)
               .tap(() => {
                 new Aud("click.wav").play();
-                new Aud("bgM.mp3").play();
                 location.href = "level1.html";
                 startButton.removeFrom();
                 wallAnimate.removeFrom();
