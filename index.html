@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Cat on the wall</title>
+
+<!--
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ZIM Zapps
+Progressive Web App (PWA) tool output from
+https://zimjs.com/zapps 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-->
+
+<!-- ZIM PWA STEP 1 - MANIFEST -->
+<link rel="manifest" href="manifest.json">
+
+<!-- ZIM PWA STEP 2 - META -->
+<meta name="apple-mobile-web-app-title" content="Cat on the wall">
+<meta name="theme-color" content="#333333">
+<meta name="msapplication-TileColor" content="#333333">
+
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<link rel="apple-touch-icon" href="icons/icon_152.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="msapplication-TileImage" content="icons/icon_144.png">
+
+<!-- should have faveicons - see link below -->
+<!-- see https://www.favicon-generator.org/ -->
+
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="msapplication-starturl" content="./">
+
+<!-- ZIM PWA STEP 3 - SERVICE WORKER -->
+<script>
+	window.addEventListener("DOMContentLoaded", function () {
+		if (location.protocol === "https:" && "serviceWorker" in navigator) navigator.serviceWorker.register("./serviceworker.js");
+	});
+</script>
+
+    <script src="libraries/createjs.js"></script>
+    <script src="libraries/zim_min.js"></script>
+    <script src="libraries/box2d.js"></script>
+    <script src="libraries/physics_2.2.js"></script>
+    <!-- zimjs.com - JavaScript Canvas Framework -->
+    <script type="module">
+      // import zim from "https://zimjs.org/cdn/016/zim_physics";
+
+      // See Docs under Frame for FIT, FILL, FULL, and TAG
+      const assets = [
+        "wall.json",
+        "wall.png",
+        "cat1.png",
+        "cat2.png",
+        "menu.png",
+        "click.wav",
+        "angyMeow.wav",
+        "bgM.mp3",
+        "bg.png",
+        "title.png",
+        "RandomThought.ttf",
+      ];
+      const path = "assets/";
+      new Frame({
+        scaling: FIT,
+        width: 720,
+        height: 1280,
+        color: interstellar,
+        outerColor: dark,
+        ready: ready,
+        sensors: true,
+        assets,
+        path,
+      });
+
+      function ready() {
+
+	// ZIM PWA STEP 4 - ADD TO HOME SCREEN (A2HS)
+	// NOTE: new PWA() works with ZIM Cat 04 or beyond
+	// Message shows if only if running from mobile Browser
+	// See https://zimjs.com/docs.html?item=PWA for more options
+
+	new PWA(runZapp);
+	function runZapp() {
+	        let level = 0;
+	        const forces = [20, 30, 40];
+	        start();
+	        function start() {
+	          const gameContainer = new Container(720, 1280).center();
+	          const bg = new Pic("bg.png").sca(0.4).center(gameContainer);
+	
+	          const title = new Pic("title.png")
+	            .sca(0.2)
+	            .pos(0, 50, CENTER, TOP, gameContainer);
+	
+	          const wallAnimate = new Sprite({ json: "wall.json" })
+	            .sca(0.8)
+	            .pos(0, 100, CENTER, BOTTOM, gameContainer)
+	            .run(6);
+	
+	          const instructions = new Label({
+	            text: "TiLt To BaLaNcE",
+	            size: 36,
+	            font: "RandomThought",
+	            color: "black",
+	          }).pos(40, 450, CENTER, TOP, gameContainer);
+	
+	          const introAnim1 = new Pic("introanim1.png")
+	            .sca(0.3)
+	            .reg(CENTER)
+	            .pos(-150, 410, CENTER, TOP, gameContainer)
+	            .animate({
+	              props: { rotation: -10 },
+	              loop: true,
+	              time: 0.9,
+	              ease: "bounceOut",
+	            });
+	
+	          const startButton = new Pic("startButton.png")
+	            .sca(0.2)
+	            .center(gameContainer)
+	            .tap(() => {
+	              new Aud("click.wav").play();
+	              new Aud("bgM.mp3").play();
+	              location.href = "level1.html";
+	              startButton.removeFrom();
+	              wallAnimate.removeFrom();
+	              instructions.removeFrom();
+	              introAnim1.removeFrom();
+	              title.removeFrom();
+	            });
+	        }
+	} // end runZapp
+
+      } // end ready
+    </script>
+    
+  </head>
+  <body></body>
+</html>
+

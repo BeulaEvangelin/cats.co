@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Cat on the wall</title>
+    <script src="https://zimjs.org/cdn/1.4.1/createjs.js"></script>
+    <script src="https://zimjs.org/cdn/016/zim_min.js"></script>
+    <script src="https://zimjs.org/cdn/2.1.3/box2d.js"></script>
+    <script src="https://zimjs.org/cdn/physics_2.2.js"></script>
+    <!-- zimjs.com - JavaScript Canvas Framework -->
+    <script type="module">
+      // import zim from "https://zimjs.org/cdn/016/zim_physics";
+
+      // See Docs under Frame for FIT, FILL, FULL, and TAG
+      const assets = [
+        "wall.json",
+        "wall.png",
+        "cat1.png",
+        "cat2.png",
+        "menu.png",
+        "angyMeow.wav",
+        "bgM.mp3",
+        "bg.png",
+        "title.png",
+        "RandomThought.ttf",
+      ];
+      const path = "assets/";
+      new Frame({
+        scaling: FIT,
+        width: 720,
+        height: 1280,
+        color: interstellar,
+        outerColor: dark,
+        ready: ready,
+        sensors: true,
+        assets,
+        path,
+      });
+
+      function ready() {
+        new Aud("bgM.mp3").play();
+        const gameContainer = new Container(720, 1280).center();
+        const bg = new Pic("bg.png").sca(0.4).center(gameContainer);
+        const cat1 = new Pic("cat1.png")
+          .sca(0.9)
+          .reg(CENTER)
+          .pos(0, 650, CENTER, BOTTOM, gameContainer)
+          .addPhysics({
+            bounciness: 0,
+            angular: 1,
+            density: 1.5,
+          });
+
+        new Rectangle(35, 465, red, black, 2)
+          .reg(CENTER)
+          .pos(0, -10, CENTER, BOTTOM, gameContainer)
+          .addPhysics(false);
+
+        const timer = new Container(200, 200)
+          .pos(0, 20, RIGHT, TOP, gameContainer)
+          .sca(0.7);
+        const timerBG = new Rectangle(150, 80, black).center(timer);
+        const timerText = new Label({
+          text: "5",
+          size: 38,
+          font: "RandomThought",
+          color: "white",
+        }).center(timer);
+        const timerInt = interval({
+          time: 1,
+          call: () => {
+            timerText.text--;
+          },
+          total: 5,
+          complete: () => {
+            zog("Game Over");
+            gameOver();
+          },
+        });
+        function gameOver() {
+          const wonPane = new Rectangle({
+            width: 400,
+            height: 400,
+            color: white,
+            borderColor: orange,
+            borderWidth: 8,
+            corner: 20,
+          }).pos(0, 380, CENTER, BOTTOM);
+          const youWon = new Label({
+            text: "You Won!!!",
+            size: 72,
+            font: "RandomThought",
+            color: orange,
+          }).pos(0, 600, CENTER, BOTTOM);
+          const retry = new Label({
+            text: "Retry",
+            size: 40,
+            font: "RandomThought",
+            color: "white",
+          }).pos(0, 450, CENTER, BOTTOM);
+          const retryBtn = new Button(200, 80, retry, "black").pos(
+            0,
+            450,
+            CENTER,
+            BOTTOM
+          );
+          retryBtn.tap(() => {
+            zgo("level1.html");
+            zogr();
+          });
+        }
+
+        const list = new List({
+          width: 200,
+          height: 200,
+          list: {
+            menu: {
+              id0: {
+                obj: new Tile({
+                  obj: [
+                    new Pic("menu.png").sca(0.4),
+                    new Label({
+                      text: "Levels  ",
+                      size: 36,
+                      font: "RandomThought",
+                      color: black,
+                    }),
+                  ],
+                  cols: 2,
+                  rows: 1,
+                  spacingH: 2,
+                  spacingV: 0,
+                  unique: true,
+                  valign: CENTER,
+                  backdropColor: white,
+                  backdropPaddingv: 40,
+                  backdropPaddingH: 30,
+                }),
+                list: {
+                  id1: { obj: "Easy" },
+                  id2: { obj: "Medium" },
+                  id3: { obj: "Hard" },
+                },
+              },
+            },
+            bloom: true,
+            whither: true,
+          },
+          align: LEFT,
+          backgroundColor: yellow,
+          rollBackgroundColor: orange,
+          pulldown: true,
+          pulldownToggle: true,
+        })
+          .pos(0, 60, LEFT, TOP, gameContainer)
+          .change(() => {
+            zog(list.selectedIndex);
+            if (list.selectedIndex == 1) {
+              location.href = "level1.html";
+            } else if (list.selectedIndex == 2) {
+              location.href = "level2.html";
+            } else if (list.selectedIndex == 3) {
+              location.href = "level3.html";
+            }
+          });
+
+        const orientation = F.on("deviceorientation", (e) => {
+          label.text =
+            decimals(e.rotation.x) +
+            "," +
+            decimals(e.rotation.y) +
+            "," +
+            decimals(e.rotation.z);
+
+          const forceX = e.rotation.y * 20;
+          const forceY = e.rotation.x * 20;
+
+          cat1.force(forceX, forceY);
+
+          cat1.contact((obj) => {
+            if (obj.type == "Border") {
+              new Aud("angyMeow.wav").play();
+              gameOver2();
+            }
+          });
+          function gameOver2() {
+            timerInt.clear();
+            F.off("deviceorientation", orientation);
+            cat1.physics.dispose();
+            timerText.text == "0";
+            const LosePane = new Rectangle({
+              width: 400,
+              height: 400,
+              color: white,
+              borderColor: red,
+              borderWidth: 8,
+              corner: 20,
+            }).pos(0, 380, CENTER, BOTTOM);
+            const youWon = new Label({
+              text: "You Lost :(",
+              size: 72,
+              font: "RandomThought",
+              color: orange,
+            }).pos(0, 600, CENTER, BOTTOM);
+            const retry = new Label({
+              text: "Retry",
+              size: 40,
+              font: "RandomThought",
+              color: "white",
+            }).pos(0, 450, CENTER, BOTTOM);
+            const retryBtn = new Button(200, 80, retry, "black").pos(
+              0,
+              450,
+              CENTER,
+              BOTTOM
+            );
+            retryBtn.tap(() => {
+              zgo("level1.html");
+            });
+          }
+          S.update();
+        });
+      } // end ready
+    </script>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+  </head>
+  <body></body>
+</html>
