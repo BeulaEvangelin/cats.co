@@ -17,6 +17,7 @@
         "wall.png",
         "cat1.png",
         "cat2.png",
+        "cat3.png",
         "menu.png",
         "click.wav",
         "angyMeow.wav",
@@ -40,7 +41,6 @@
 
       function ready() {
         new Aud("bgM.mp3").play();
-        const label = new Label().center();
         const gameContainer = new Container(720, 1280).center();
         const bg = new Pic("bg.png").sca(0.4).center(gameContainer);
         const cat1 = new Pic("cat3.png")
@@ -49,11 +49,11 @@
           .pos(0, 650, CENTER, BOTTOM, gameContainer)
           .addPhysics({
             bounciness: 0,
-            angular: 0.5,
-            density: 2,
+            angular: 0,
+            density: 2.5,
           });
 
-        new Rectangle(30, 465, orange, black, 2)
+        new Rectangle(20, 465, red, black, 2)
           .reg(CENTER)
           .pos(0, -10, CENTER, BOTTOM, gameContainer)
           .addPhysics(false);
@@ -166,6 +166,7 @@
             }
           });
 
+        const label = new Label().center(gameContainer);
         F.on("deviceorientation", (e) => {
           label.text =
             decimals(e.rotation.x) +
